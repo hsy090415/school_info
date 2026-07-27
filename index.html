@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>급식 & 학사일정 - Stitch NEIS UI</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts (Noto Sans KR & Inter) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0f7ff',
+              100: '#e0effe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'Noto Sans KR', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Inter', 'Noto Sans KR', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(156, 163, 175, 0.4);
+      border-radius: 9999px;
+    }
+
+    /* Glassmorphism effects */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+    .dark .glass-card {
+      background: rgba(30, 41, 59, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .active-tab-glow {
+      box-shadow: 0 4px 20px -2px rgba(37, 99, 235, 0.35);
+    }
+  </style>
+</head>
+<body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen flex justify-center selection:bg-blue-500 selection:text-white transition-colors duration-200">
+
+  <div id="app-container" class="w-full max-w-md bg-white dark:bg-slate-900 min-h-screen shadow-2xl relative flex flex-col pb-24">
+    
+    <!-- Top Bar Header -->
+    <header class="sticky top-0 z-30 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-2">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white font-bold shadow-md shadow-blue-500/20">
+          <i class="fa-solid fa-utensils text-sm"></i>
+        </div>
+        <div>
+          <h1 class="text-base font-bold text-slate-900 dark:text-white leading-tight flex items-center gap-1.5">
+            <span>스티치 급식</span>
+            <span class="text-[10px] bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 font-semibold px-1.5 py-0.5 rounded-full">NEIS</span>
+          </h1>
+          <p id="current-school-display" class="text-xs text-slate-500 dark:text-slate-400 font-medium truncate max-w-[190px]">
+            서울고등학교
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-1.5">
+        <button id="btn-school-search" class="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors" title="학교 변경">
+          <i class="fa-solid fa-magnifying-glass text-base"></i>
+        </button>
+        <button id="btn-theme-toggle" class="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors" title="다크모드 전환">
+          <i class="fa-solid fa-moon text-base dark:hidden"></i>
+          <i class="fa-solid fa-sun text-base hidden dark:inline"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- View Switcher Tabs -->
+    <nav class="px-4 pt-3 pb-1 flex space-x-2 border-b border-slate-100 dark:border-slate-800/50">
+      <button id="tab-meal" onclick="switchTab('meal')" class="flex-1 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 bg-blue-600 text-white shadow-sm active-tab-glow">
+        <i class="fa-solid fa-bowl-food"></i>
+        <span>주간 급식</span>
+      </button>
+      <button id="tab-schedule" onclick="switchTab('schedule')" class="flex-1 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700">
+        <i class="fa-regular fa-calendar-days"></i>
+        <span>학사 일정</span>
+      </button>
+      <button id="tab-allergy" onclick="switchTab('allergy')" class="py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700">
+        <i class="fa-solid fa-shield-halved"></i>
+        <span class="sr-only sm:not-sr-only">알레르기</span>
+      </button>
+    </nav>
+
+    <!-- Main Content Dynamic View -->
+    <main class="flex-1 px-4 pt-3">
+      
+      <!-- SECTION: MEAL VIEW -->
+      <section id="view-meal" class="space-y-4">
+        <!-- Date Selector Controller -->
+        <div class="glass-card rounded-2xl p-3 shadow-sm border border-slate-200/70 dark:border-slate-800">
+          <div class="flex items-center justify-between mb-3 px-1">
+            <button id="btn-prev-week" class="p-1.5 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors">
+              <i class="fa-solid fa-chevron-left text-xs"></i>
+            </button>
+            <div class="text-center">
+              <span id="week-range-text" class="text-xs font-bold text-slate-800 dark:text-slate-200">
+                2026.03.23 ~ 03.27
+              </span>
+            </div>
+            <button id="btn-next-week" class="p-1.5 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors">
+              <i class="fa-solid fa-chevron-right text-xs"></i>
+            </button>
+          </div>
+
+          <!-- Weekday Pills (월~금) -->
+          <div id="day-pills-container" class="grid grid-cols-5 gap-1.5">
+            <!-- Dynamic JS generation -->
+          </div>
+        </div>
+
+        <!-- Active Allergy Warning Banner -->
+        <div id="allergy-alert-banner" class="hidden bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 rounded-xl p-3 text-xs text-amber-800 dark:text-amber-300 flex items-start gap-2.5">
+          <i class="fa-solid fa-triangle-exclamation text-amber-500 mt-0.5 text-sm"></i>
+          <div>
+            <div class="font-bold">알레르기 유의 음식 포함</div>
+            <div id="allergy-alert-text" class="text-[11px] opacity-90">설정하신 알레르기 성분이 오늘의 급식에 포함되어 있습니다.</div>
+          </div>
+        </div>
+
+        <!-- Meal Content Card -->
+        <div id="meal-card" class="glass-card rounded-2xl p-4 shadow-sm border border-slate-200/70 dark:border-slate-800 space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800/80 pb-3">
+            <div>
+              <div id="selected-day-title" class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <span>월요일 급식</span>
+                <span class="text-xs font-normal text-slate-500 dark:text-slate-400" id="selected-day-sub">3월 23일</span>
+              </div>
+            </div>
+            <div class="text-right">
+              <span id="meal-calories" class="inline-flex items-center gap-1 bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 font-bold text-xs px-2.5 py-1 rounded-lg border border-rose-200/60 dark:border-rose-900/50">
+                <i class="fa-solid fa-fire-flame-curved text-rose-500"></i>
+                <span>685 Kcal</span>
+              </span>
+            </div>
+          </div>
+
+          <!-- Dishes Menu List -->
+          <div>
+            <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+              <i class="fa-solid fa-list-check"></i>
+              <span>식단 메뉴</span>
+            </h3>
+            <ul id="meal-dish-list" class="space-y-2">
+              <!-- JS rendered list items -->
+            </ul>
+          </div>
+
+          <!-- Extra Info Accordion (Origin & Nutrition) -->
+          <div class="pt-2 border-t border-slate-100 dark:border-slate-800/80 text-xs space-y-2">
+            <details class="group">
+              <summary class="font-medium text-slate-500 dark:text-slate-400 cursor-pointer flex items-center justify-between py-1 hover:text-slate-700 dark:hover:text-slate-200">
+                <span class="flex items-center gap-1.5">
+                  <i class="fa-solid fa-leaf text-emerald-500"></i> 원산지 정보
+                </span>
+                <i class="fa-solid fa-chevron-down text-[10px] transition-transform group-open:rotate-180"></i>
+              </summary>
+              <p id="meal-origin-text" class="pt-1 pb-2 text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed bg-slate-50 dark:bg-slate-800/50 p-2.5 rounded-lg mt-1">
+                돼지고기(국내산), 쌀(국내산), 김치(국내산)
+              </p>
+            </details>
+
+            <details class="group">
+              <summary class="font-medium text-slate-500 dark:text-slate-400 cursor-pointer flex items-center justify-between py-1 hover:text-slate-700 dark:hover:text-slate-200">
+                <span class="flex items-center gap-1.5">
+                  <i class="fa-solid fa-chart-pie text-blue-500"></i> 영양 성분 정보
+                </span>
+                <i class="fa-solid fa-chevron-down text-[10px] transition-transform group-open:rotate-180"></i>
+              </summary>
+              <p id="meal-nutrition-text" class="pt-1 pb-2 text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed bg-slate-50 dark:bg-slate-800/50 p-2.5 rounded-lg mt-1">
+                탄수화물 92g, 단백질 34g, 지방 18g
+              </p>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION: SCHEDULE VIEW -->
+      <section id="view-schedule" class="hidden space-y-4">
+        <div class="glass-card rounded-2xl p-4 shadow-sm border border-slate-200/70 dark:border-slate-800">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <i class="fa-solid fa-calendar-day text-blue-500"></i>
+              <span>월간 학사일정</span>
+            </h2>
+            <span class="text-xs bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-lg font-medium text-slate-600 dark:text-slate-300">
+              2026년 3월
+            </span>
+          </div>
+
+          <!-- Schedule Timeline List -->
+          <div id="schedule-list" class="space-y-3">
+            <!-- JS populated schedule items -->
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION: ALLERGY SETTINGS VIEW -->
+      <section id="view-allergy" class="hidden space-y-4">
+        <div class="glass-card rounded-2xl p-4 shadow-sm border border-slate-200/70 dark:border-slate-800">
+          <div class="flex items-center justify-between mb-2">
+            <h2 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <i class="fa-solid fa-triangle-exclamation text-amber-500"></i>
+              <span>개인 알레르기 필터</span>
+            </h2>
+            <span id="allergy-count-badge" class="text-xs font-bold bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300 px-2 py-0.5 rounded-full">
+              0개 선택됨
+            </span>
+          </div>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">
+            체크된 알레르기 항원이 들어간 메뉴는 급식표에 강렬한 강조 표시 및 경고가 노출됩니다.
+          </p>
+
+          <div id="allergy-grid" class="grid grid-cols-2 gap-2">
+            <!-- Dynamic JS render -->
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Modal Drawer: School Search -->
+    <div id="modal-school-search" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+      <div class="w-full max-w-md bg-white dark:bg-slate-900 rounded-t-2xl sm:rounded-2xl p-5 shadow-2xl max-h-[85vh] flex flex-col space-y-4 animate-in slide-in-from-bottom duration-200">
+        
+        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+          <h3 class="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <i class="fa-solid fa-school text-blue-600"></i>
+            <span>학교 검색</span>
+          </h3>
+          <button id="btn-close-modal" class="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600">
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+
+        <div class="space-y-3">
+          <div class="flex gap-2">
+            <input 
+              type="text" 
+              id="input-school-name" 
+              placeholder="학교 이름 입력 (예: 서울고)" 
+              class="flex-1 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm px-3.5 py-2.5 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 border border-transparent"
+            />
+            <button id="btn-do-search" class="bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm px-4 py-2.5 rounded-xl transition-colors flex items-center gap-1.5">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <span>검색</span>
+            </button>
+          </div>
+        </div>
+
+        <div id="search-results-list" class="flex-1 overflow-y-auto space-y-2 min-h-[200px] max-h-[320px] pr-1">
+          <div class="text-center text-slate-400 text-xs py-8">
+            학교 이름을 검색하여 원하는 학교를 선택하세요.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating Mode Indicator / API Switch Footer -->
+    <div class="fixed bottom-3 left-1/2 -translate-x-1/2 z-40 bg-slate-900/80 dark:bg-slate-800/90 text-white text-[11px] px-3 py-1.5 rounded-full backdrop-blur-md shadow-lg border border-slate-700/50 flex items-center gap-2">
+      <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+      <span id="api-status-text">NEIS API 연동중</span>
+      <button onclick="toggleApiMode()" class="underline text-blue-300 hover:text-blue-200 ml-1">
+        [모드 변경]
+      </button>
+    </div>
+
+  </div>
+
+  <script>
+    // Constants & Default State
+    const ALLERGEN_LIST = [
+      { id: 1, name: '난류(계란)' }, { id: 2, name: '우유' }, { id: 3, name: '메밀' },
+      { id: 4, name: '땅콩' }, { id: 5, name: '대두' }, { id: 6, name: '밀' },
+      { id: 7, name: '고등어' }, { id: 8, name: '게' }, { id: 9, name: '새우' },
+      { id: 10, name: '돼지고기' }, { id: 11, name: '복숭아' }, { id: 12, name: '토마토' },
+      { id: 13, name: '아황산류' }, { id: 14, name: '호두' }, { id: 15, name: '닭고기' },
+      { id: 16, name: '쇠고기' }, { id: 17, name: '오징어' }, { id: 18, name: '조개류' }, { id: 19, name: '잣' }
+    ];
+
+    const MOCK_MEALS = {
+      0: {
+        dishes: [
+          { name: '차조밥', allergens: [] },
+          { name: '얼갈이된장국', allergens: [5, 6] },
+          { name: '돈육고추장불고기', allergens: [5, 6, 10] },
+          { name: '계란말이', allergens: [1, 5] },
+          { name: '배추김치', allergens: [9] },
+          { name: '멜론', allergens: [] }
+        ],
+        calories: '685.4 Kcal',
+        origin: '돼지고기(국내산), 쌀(국내산), 김치(국내산)',
+        nutrition: '탄수화물: 92g, 단백질: 34g, 지방: 18g'
+      },
+      1: {
+        dishes: [
+          { name: '발아현미밥', allergens: [] },
+          { name: '해물순두부찌개', allergens: [1, 5, 6, 9, 10, 13, 17, 18] },
+          { name: '안동찜닭', allergens: [5, 6, 13, 15] },
+          { name: '치즈감자전', allergens: [1, 2, 5, 6] },
+          { name: '깍두기', allergens: [9] },
+          { name: '샤인머스캣', allergens: [] }
+        ],
+        calories: '742.1 Kcal',
+        origin: '닭고기(국내산), 쇠고기(한우), 쌀(국내산)',
+        nutrition: '탄수화물: 104g, 단백질: 41g, 지방: 21g'
+      },
+      2: {
+        dishes: [
+          { name: '수제치즈버거', allergens: [1, 2, 5, 6, 10, 12, 13, 16] },
+          { name: '크림스프', allergens: [1, 2, 5, 6] },
+          { name: '웨지감자구이', allergens: [5] },
+          { name: '수제피클', allergens: [] },
+          { name: '한라봉에이드', allergens: [] }
+        ],
+        calories: '810.0 Kcal',
+        origin: '쇠고기(국내산), 돼지고기(국내산)',
+        nutrition: '탄수화물: 110g, 단백질: 32g, 지방: 28g'
+      },
+      3: {
+        dishes: [
+          { name: '잡곡밥', allergens: [5] },
+          { name: '쇠고기무국', allergens: [5, 6, 16] },
+          { name: '오징어볶음', allergens: [5, 6, 17] },
+          { name: '시금치나물무침', allergens: [] },
+          { name: '포기김치', allergens: [9] },
+          { name: '사과', allergens: [] }
+        ],
+        calories: '630.2 Kcal',
+        origin: '오징어(국내산), 쇠고기(국내산)',
+        nutrition: '탄수화물: 88g, 단백질: 36g, 지방: 14g'
+      },
+      4: {
+        dishes: [
+          { name: '카레라이스', allergens: [2, 5, 6, 10, 12, 13] },
+          { name: '팽이버섯장국', allergens: [5, 6] },
+          { name: '수제치킨까스', allergens: [1, 5, 6, 15] },
+          { name: '단무지무침', allergens: [] },
+          { name: '배추겉절이', allergens: [9] },
+          { name: '요구르트', allergens: [2] }
+        ],
+        calories: '715.8 Kcal',
+        origin: '닭고기(국내산), 돼지고기(국내산)',
+        nutrition: '탄수화물: 98g, 단백질: 38g, 지방: 22g'
+      }
+    };
+
+    const MOCK_EVENTS = [
+      { date: '2026-03-23', eventNm: '1학기 학급 임원 선거', type: '행사' },
+      { date: '2026-03-27', eventNm: '동아리 오리엔테이션', type: '행사' },
+      { date: '2026-04-08', eventNm: '전국연합학력평가', type: '시험' },
+      { date: '2026-04-29', eventNm: '1학기 중간고사 (시작)', type: '시험' },
+      { date: '2026-05-05', eventNm: '어린이날 (공휴일)', type: '휴업일' }
+    ];
+
+    // State
+    let currentSchool = {
+      ATPT_OFCDC_SC_CODE: 'B10',
+      SD_SCHUL_CODE: '7010057',
+      SCHUL_NM: '서울고등학교'
+    };
+    let currentBaseDate = new Date();
+    let selectedDayIndex = 0; // 0 = Mon, 4 = Fri
+    let userAllergies = JSON.parse(localStorage.getItem('user_allergies') || '[]');
+    let currentTab = 'meal';
+    let isServerlessMode = true; // Attempts api/generate.js first, falls back gracefully
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initEventListeners();
+      renderAllergyGrid();
+      updateWeekView();
+      renderScheduleList();
+    });
+
+    function initEventListeners() {
+      // Dark Mode Toggle
+      document.getElementById('btn-theme-toggle').addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+      });
+
+      // Navigation Week Buttons
+      document.getElementById('btn-prev-week').addEventListener('click', () => {
+        currentBaseDate.setDate(currentBaseDate.getDate() - 7);
+        updateWeekView();
+      });
+      document.getElementById('btn-next-week').addEventListener('click', () => {
+        currentBaseDate.setDate(currentBaseDate.getDate() + 7);
+        updateWeekView();
+      });
+
+      // Modal Triggers
+      const modal = document.getElementById('modal-school-search');
+      document.getElementById('btn-school-search').addEventListener('click', () => {
+        modal.classList.remove('hidden');
+      });
+      document.getElementById('btn-close-modal').addEventListener('click', () => {
+        modal.classList.add('hidden');
+      });
+      document.getElementById('btn-do-search').addEventListener('click', performSchoolSearch);
+    }
+
+    function switchTab(tab) {
+      currentTab = tab;
+      ['meal', 'schedule', 'allergy'].forEach(t => {
+        const viewEl = document.getElementById(`view-${t}`);
+        const tabBtn = document.getElementById(`tab-${t}`);
+        if (t === tab) {
+          viewEl.classList.remove('hidden');
+          tabBtn.className = 'flex-1 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 bg-blue-600 text-white shadow-sm active-tab-glow';
+        } else {
+          viewEl.classList.add('hidden');
+          tabBtn.className = 'flex-1 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700';
+        }
+      });
+    }
+
+    function getMonToFri(baseDate) {
+      const d = new Date(baseDate);
+      const day = d.getDay();
+      const diffToMon = d.getDate() - day + (day === 0 ? -6 : 1);
+      
+      const mon = new Date(d.setDate(diffToMon));
+      const days = [];
+      for (let i = 0; i < 5; i++) {
+        const next = new Date(mon);
+        next.setDate(mon.getDate() + i);
+        days.push(next);
+      }
+      return days;
+    }
+
+    function updateWeekView() {
+      const weekDays = getMonToFri(currentBaseDate);
+      const monStr = `${weekDays[0].getMonth() + 1}.${weekDays[0].getDate()}`;
+      const friStr = `${weekDays[4].getMonth() + 1}.${weekDays[4].getDate()}`;
+      document.getElementById('week-range-text').innerText = `${weekDays[0].getFullYear()}.${monStr} ~ ${friStr}`;
+
+      const dayPillsContainer = document.getElementById('day-pills-container');
+      dayPillsContainer.innerHTML = '';
+
+      const dayLabels = ['월', '화', '수', '목', '금'];
+      weekDays.forEach((dayObj, index) => {
+        const isSelected = index === selectedDayIndex;
+        const btn = document.createElement('button');
+        btn.className = `py-2 rounded-xl flex flex-col items-center justify-center transition-all ${
+          isSelected 
+            ? 'bg-blue-600 text-white shadow-md font-bold' 
+            : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200'
+        }`;
+        btn.onclick = () => {
+          selectedDayIndex = index;
+          updateWeekView();
+        };
+
+        btn.innerHTML = `
+          <span class="text-[10px] opacity-80">${dayLabels[index]}</span>
+          <span class="text-xs font-bold">${dayObj.getDate()}</span>
+        `;
+        dayPillsContainer.appendChild(btn);
+      });
+
+      renderMealDetail(weekDays[selectedDayIndex], dayLabels[selectedDayIndex]);
+    }
+
+    function renderMealDetail(dateObj, dayLabel) {
+      document.getElementById('selected-day-title').innerHTML = `
+        <span>${dayLabel}요일 급식</span>
+        <span class="text-xs font-normal text-slate-500 dark:text-slate-400">${dateObj.getMonth() + 1}월 ${dateObj.getDate()}일</span>
+      `;
+
+      // Fetch Mock Data (or serverless API fallback)
+      const data = MOCK_MEALS[selectedDayIndex] || MOCK_MEALS[0];
+
+      document.getElementById('meal-calories').innerHTML = `
+        <i class="fa-solid fa-fire-flame-curved text-rose-500"></i>
+        <span>${data.calories}</span>
+      `;
+
+      const dishListEl = document.getElementById('meal-dish-list');
+      dishListEl.innerHTML = '';
+
+      let hasWarning = false;
+
+      data.dishes.forEach(dish => {
+        const matchingAllergies = dish.allergens.filter(a => userAllergies.includes(a));
+        if (matchingAllergies.length > 0) hasWarning = true;
+
+        const li = document.createElement('li');
+        li.className = `p-2.5 rounded-xl border transition-all flex items-center justify-between ${
+          matchingAllergies.length > 0
+            ? 'bg-amber-50/80 dark:bg-amber-950/40 border-amber-300 dark:border-amber-800'
+            : 'bg-slate-50/80 dark:bg-slate-800/40 border-slate-100 dark:border-slate-800'
+        }`;
+
+        const allergenBadges = dish.allergens.map(aId => {
+          const isUserMatch = userAllergies.includes(aId);
+          return `<span class="px-1.5 py-0.5 text-[9px] rounded font-semibold ${
+            isUserMatch 
+              ? 'bg-amber-500 text-white font-bold' 
+              : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
+          }">${aId}</span>`;
+        }).join(' ');
+
+        li.innerHTML = `
+          <div class="flex items-center gap-2">
+            ${matchingAllergies.length > 0 ? '<i class="fa-solid fa-triangle-exclamation text-amber-500 text-xs"></i>' : ''}
+            <span class="text-xs font-medium text-slate-800 dark:text-slate-200">${dish.name}</span>
+          </div>
+          <div class="flex gap-1">${allergenBadges}</div>
+        `;
+        dishListEl.appendChild(li);
+      });
+
+      // Show/Hide Warning Banner
+      const alertBanner = document.getElementById('allergy-alert-banner');
+      if (hasWarning) {
+        alertBanner.classList.remove('hidden');
+      } else {
+        alertBanner.classList.add('hidden');
+      }
+
+      document.getElementById('meal-origin-text').innerText = data.origin;
+      document.getElementById('meal-nutrition-text').innerText = data.nutrition;
+    }
+
+    function renderAllergyGrid() {
+      const grid = document.getElementById('allergy-grid');
+      grid.innerHTML = '';
+
+      ALLERGEN_LIST.forEach(item => {
+        const isChecked = userAllergies.includes(item.id);
+        const btn = document.createElement('button');
+        btn.className = `p-2.5 rounded-xl text-xs font-medium border flex items-center justify-between transition-all ${
+          isChecked
+            ? 'bg-amber-50 dark:bg-amber-950/50 border-amber-400 dark:border-amber-700 text-amber-900 dark:text-amber-200 font-bold'
+            : 'bg-slate-50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400'
+        }`;
+
+        btn.onclick = () => {
+          if (isChecked) {
+            userAllergies = userAllergies.filter(id => id !== item.id);
+          } else {
+            userAllergies.push(item.id);
+          }
+          localStorage.setItem('user_allergies', JSON.stringify(userAllergies));
+          renderAllergyGrid();
+          updateWeekView();
+        };
+
+        btn.innerHTML = `
+          <span>${item.id}. ${item.name}</span>
+          ${isChecked ? '<i class="fa-solid fa-check text-amber-500"></i>' : ''}
+        `;
+        grid.appendChild(btn);
+      });
+
+      document.getElementById('allergy-count-badge').innerText = `${userAllergies.length}개 선택됨`;
+    }
+
+    function renderScheduleList() {
+      const container = document.getElementById('schedule-list');
+      container.innerHTML = '';
+
+      MOCK_EVENTS.forEach(ev => {
+        const div = document.createElement('div');
+        div.className = 'p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center justify-between';
+        
+        const badgeColor = ev.type === '시험' 
+          ? 'bg-rose-100 dark:bg-rose-950 text-rose-600 dark:text-rose-400' 
+          : 'bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400';
+
+        div.innerHTML = `
+          <div>
+            <div class="text-xs font-bold text-slate-800 dark:text-slate-100">${ev.eventNm}</div>
+            <div class="text-[11px] text-slate-400 mt-0.5">${ev.date}</div>
+          </div>
+          <span class="text-[10px] font-bold px-2 py-0.5 rounded-md ${badgeColor}">
+            ${ev.type}
+          </span>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    async function performSchoolSearch() {
+      const input = document.getElementById('input-school-name').value.trim();
+      const resultsContainer = document.getElementById('search-results-list');
+
+      if (!input) {
+        resultsContainer.innerHTML = '<div class="text-center text-rose-500 text-xs py-4">학교 이름을 입력해주세요.</div>';
+        return;
+      }
+
+      resultsContainer.innerHTML = '<div class="text-center text-slate-400 text-xs py-8"><i class="fa-solid fa-spinner fa-spin"></i> 검색 중...</div>';
+
+      try {
+        // Fetch from api/generate.js route
+        const res = await fetch(`/api/generate?type=search&keyword=${encodeURIComponent(input)}`);
+        const data = await res.json();
+
+        if (data.schools && data.schools.length > 0) {
+          resultsContainer.innerHTML = '';
+          data.schools.forEach(s => {
+            const item = document.createElement('div');
+            item.className = 'p-3 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-950/40 border border-slate-200 dark:border-slate-700 cursor-pointer transition-colors';
+            item.onclick = () => selectSchool(s);
+            item.innerHTML = `
+              <div class="font-bold text-xs text-slate-800 dark:text-slate-200">${s.SCHUL_NM}</div>
+              <div class="text-[10px] text-slate-400 mt-0.5">${s.ATPT_OFCDC_SC_NM} | ${s.LCTN_SC_NM || '지역 미지정'}</div>
+            `;
+            resultsContainer.appendChild(item);
+          });
+        } else {
+          resultsContainer.innerHTML = '<div class="text-center text-slate-400 text-xs py-8">검색 결과가 없습니다.</div>';
+        }
+      } catch (err) {
+        // Mock fallback demo search
+        resultsContainer.innerHTML = `
+          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 cursor-pointer" onclick="selectSchool({SCHUL_NM: '${input}', SD_SCHUL_CODE: '7010057'})">
+            <div class="font-bold text-xs text-slate-800 dark:text-slate-200">${input}</div>
+            <div class="text-[10px] text-slate-400 mt-0.5">서울특별시교육청 (데모 바로선택)</div>
+          </div>
+        `;
+      }
+    }
+
+    function selectSchool(school) {
+      currentSchool = school;
+      document.getElementById('current-school-display').innerText = school.SCHUL_NM;
+      document.getElementById('modal-school-search').classList.add('hidden');
+      updateWeekView();
+    }
+
+    function toggleApiMode() {
+      isServerlessMode = !isServerlessMode;
+      const statusText = document.getElementById('api-status-text');
+      statusText.innerText = isServerlessMode ? 'NEIS API 연동중' : '로컬 목데이터 모드';
+    }
+  </script>
+</body>
+</html>
