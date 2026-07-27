@@ -1,1 +1,1 @@
-# school_iofo
+# school_info
