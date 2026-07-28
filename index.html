@@ -9,7 +9,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Google Fonts (Noto Sans KR & Inter) -->
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -42,7 +42,6 @@
       -webkit-tap-highlight-color: transparent;
     }
     
-    /* Custom Scrollbar */
     ::-webkit-scrollbar {
       width: 4px;
       height: 4px;
@@ -55,7 +54,6 @@
       border-radius: 9999px;
     }
 
-    /* Glassmorphism effects */
     .glass-card {
       background: rgba(255, 255, 255, 0.85);
       backdrop-filter: blur(12px);
@@ -78,7 +76,6 @@
 
   <div id="app-container" class="w-full max-w-md bg-white dark:bg-slate-900 min-h-screen shadow-2xl relative flex flex-col pb-24">
     
-    <!-- Top Bar Header -->
     <header class="sticky top-0 z-30 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 px-4 py-3 flex items-center justify-between">
       <div class="flex items-center space-x-2">
         <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white font-bold shadow-md shadow-blue-500/20">
@@ -87,7 +84,7 @@
         <div>
           <h1 class="text-base font-bold text-slate-900 dark:text-white leading-tight flex items-center gap-1.5">
             <span>스티치 급식</span>
-            <span class="text-[10px] bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 font-semibold px-1.5 py-0.5 rounded-full">NEIS</span>
+            <span class="text-[10px] bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 font-semibold px-1.5 py-0.5 rounded-full">NEIS API</span>
           </h1>
           <p id="current-school-display" class="text-xs text-slate-500 dark:text-slate-400 font-medium truncate max-w-[190px]">
             서울고등학교
@@ -106,7 +103,6 @@
       </div>
     </header>
 
-    <!-- View Switcher Tabs -->
     <nav class="px-4 pt-3 pb-1 flex space-x-2 border-b border-slate-100 dark:border-slate-800/50">
       <button id="tab-meal" onclick="switchTab('meal')" class="flex-1 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 bg-blue-600 text-white shadow-sm active-tab-glow">
         <i class="fa-solid fa-bowl-food"></i>
@@ -122,7 +118,6 @@
       </button>
     </nav>
 
-    <!-- Main Content Dynamic View -->
     <main class="flex-1 px-4 pt-3">
       
       <!-- SECTION: MEAL VIEW -->
@@ -135,7 +130,7 @@
             </button>
             <div class="text-center">
               <span id="week-range-text" class="text-xs font-bold text-slate-800 dark:text-slate-200">
-                2026.03.23 ~ 03.27
+                날짜 로딩중...
               </span>
             </div>
             <button id="btn-next-week" class="p-1.5 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors">
@@ -149,7 +144,6 @@
           </div>
         </div>
 
-        <!-- Active Allergy Warning Banner -->
         <div id="allergy-alert-banner" class="hidden bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 rounded-xl p-3 text-xs text-amber-800 dark:text-amber-300 flex items-start gap-2.5">
           <i class="fa-solid fa-triangle-exclamation text-amber-500 mt-0.5 text-sm"></i>
           <div>
@@ -163,14 +157,13 @@
           <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800/80 pb-3">
             <div>
               <div id="selected-day-title" class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <span>월요일 급식</span>
-                <span class="text-xs font-normal text-slate-500 dark:text-slate-400" id="selected-day-sub">3월 23일</span>
+                <span>급식 정보를 불러오는 중...</span>
               </div>
             </div>
             <div class="text-right">
               <span id="meal-calories" class="inline-flex items-center gap-1 bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 font-bold text-xs px-2.5 py-1 rounded-lg border border-rose-200/60 dark:border-rose-900/50">
                 <i class="fa-solid fa-fire-flame-curved text-rose-500"></i>
-                <span>685 Kcal</span>
+                <span>- Kcal</span>
               </span>
             </div>
           </div>
@@ -182,11 +175,13 @@
               <span>식단 메뉴</span>
             </h3>
             <ul id="meal-dish-list" class="space-y-2">
-              <!-- JS rendered list items -->
+              <li class="text-center text-slate-400 text-xs py-6">
+                <i class="fa-solid fa-spinner fa-spin text-base mb-2"></i><br>
+                실시간 급식 데이터를 조회하고 있습니다...
+              </li>
             </ul>
           </div>
 
-          <!-- Extra Info Accordion (Origin & Nutrition) -->
           <div class="pt-2 border-t border-slate-100 dark:border-slate-800/80 text-xs space-y-2">
             <details class="group">
               <summary class="font-medium text-slate-500 dark:text-slate-400 cursor-pointer flex items-center justify-between py-1 hover:text-slate-700 dark:hover:text-slate-200">
@@ -196,7 +191,7 @@
                 <i class="fa-solid fa-chevron-down text-[10px] transition-transform group-open:rotate-180"></i>
               </summary>
               <p id="meal-origin-text" class="pt-1 pb-2 text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed bg-slate-50 dark:bg-slate-800/50 p-2.5 rounded-lg mt-1">
-                돼지고기(국내산), 쌀(국내산), 김치(국내산)
+                원산지 정보가 제공되지 않습니다.
               </p>
             </details>
 
@@ -208,7 +203,7 @@
                 <i class="fa-solid fa-chevron-down text-[10px] transition-transform group-open:rotate-180"></i>
               </summary>
               <p id="meal-nutrition-text" class="pt-1 pb-2 text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed bg-slate-50 dark:bg-slate-800/50 p-2.5 rounded-lg mt-1">
-                탄수화물 92g, 단백질 34g, 지방 18g
+                영양 성분 정보가 제공되지 않습니다.
               </p>
             </details>
           </div>
@@ -221,16 +216,18 @@
           <div class="flex items-center justify-between mb-4">
             <h2 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <i class="fa-solid fa-calendar-day text-blue-500"></i>
-              <span>월간 학사일정</span>
+              <span>이번달 학사일정</span>
             </h2>
-            <span class="text-xs bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-lg font-medium text-slate-600 dark:text-slate-300">
-              2026년 3월
+            <span id="schedule-month-badge" class="text-xs bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-lg font-medium text-slate-600 dark:text-slate-300">
+              -
             </span>
           </div>
 
-          <!-- Schedule Timeline List -->
           <div id="schedule-list" class="space-y-3">
-            <!-- JS populated schedule items -->
+            <div class="text-center text-slate-400 text-xs py-8">
+              <i class="fa-solid fa-spinner fa-spin text-base mb-2"></i><br>
+              학사일정을 가져오는 중입니다...
+            </div>
           </div>
         </div>
       </section>
@@ -248,7 +245,7 @@
             </span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">
-            체크된 알레르기 항원이 들어간 메뉴는 급식표에 강렬한 강조 표시 및 경고가 노출됩니다.
+            체크된 알레르기 항원이 들어간 메뉴는 급식표에 강조 표시 및 경고가 노출됩니다.
           </p>
 
           <div id="allergy-grid" class="grid grid-cols-2 gap-2">
@@ -259,9 +256,8 @@
 
     </main>
 
-    <!-- Modal Drawer: School Search -->
     <div id="modal-school-search" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
-      <div class="w-full max-w-md bg-white dark:bg-slate-900 rounded-t-2xl sm:rounded-2xl p-5 shadow-2xl max-h-[85vh] flex flex-col space-y-4 animate-in slide-in-from-bottom duration-200">
+      <div class="w-full max-w-md bg-white dark:bg-slate-900 rounded-t-2xl sm:rounded-2xl p-5 shadow-2xl max-h-[85vh] flex flex-col space-y-4">
         
         <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
           <h3 class="font-bold text-slate-900 dark:text-white flex items-center gap-2">
@@ -280,8 +276,9 @@
               id="input-school-name" 
               placeholder="학교 이름 입력 (예: 서울고)" 
               class="flex-1 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm px-3.5 py-2.5 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 border border-transparent"
+              onkeydown="if(event.key === 'Enter') performSchoolSearch()"
             />
-            <button id="btn-do-search" class="bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm px-4 py-2.5 rounded-xl transition-colors flex items-center gap-1.5">
+            <button id="btn-do-search" onclick="performSchoolSearch()" class="bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm px-4 py-2.5 rounded-xl transition-colors flex items-center gap-1.5">
               <i class="fa-solid fa-magnifying-glass"></i>
               <span>검색</span>
             </button>
@@ -296,19 +293,15 @@
       </div>
     </div>
 
-    <!-- Floating Mode Indicator / API Switch Footer -->
-    <div class="fixed bottom-3 left-1/2 -translate-x-1/2 z-40 bg-slate-900/80 dark:bg-slate-800/90 text-white text-[11px] px-3 py-1.5 rounded-full backdrop-blur-md shadow-lg border border-slate-700/50 flex items-center gap-2">
-      <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-      <span id="api-status-text">NEIS API 연동중</span>
-      <button onclick="toggleApiMode()" class="underline text-blue-300 hover:text-blue-200 ml-1">
-        [모드 변경]
-      </button>
+    <!-- Floating Mode Indicator -->
+    <div class="fixed bottom-3 left-1/2 -translate-x-1/2 z-40 bg-slate-900/80 dark:bg-slate-800/90 text-white text-[11px] px-3.5 py-1.5 rounded-full backdrop-blur-md shadow-lg border border-slate-700/50 flex items-center gap-2">
+      <span id="api-status-dot" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+      <span id="api-status-text">api/generate.js 연동됨</span>
     </div>
 
   </div>
 
   <script>
-    // Constants & Default State
     const ALLERGEN_LIST = [
       { id: 1, name: '난류(계란)' }, { id: 2, name: '우유' }, { id: 3, name: '메밀' },
       { id: 4, name: '땅콩' }, { id: 5, name: '대두' }, { id: 6, name: '밀' },
@@ -318,107 +311,41 @@
       { id: 16, name: '쇠고기' }, { id: 17, name: '오징어' }, { id: 18, name: '조개류' }, { id: 19, name: '잣' }
     ];
 
-    const MOCK_MEALS = {
-      0: {
-        dishes: [
-          { name: '차조밥', allergens: [] },
-          { name: '얼갈이된장국', allergens: [5, 6] },
-          { name: '돈육고추장불고기', allergens: [5, 6, 10] },
-          { name: '계란말이', allergens: [1, 5] },
-          { name: '배추김치', allergens: [9] },
-          { name: '멜론', allergens: [] }
-        ],
-        calories: '685.4 Kcal',
-        origin: '돼지고기(국내산), 쌀(국내산), 김치(국내산)',
-        nutrition: '탄수화물: 92g, 단백질: 34g, 지방: 18g'
-      },
-      1: {
-        dishes: [
-          { name: '발아현미밥', allergens: [] },
-          { name: '해물순두부찌개', allergens: [1, 5, 6, 9, 10, 13, 17, 18] },
-          { name: '안동찜닭', allergens: [5, 6, 13, 15] },
-          { name: '치즈감자전', allergens: [1, 2, 5, 6] },
-          { name: '깍두기', allergens: [9] },
-          { name: '샤인머스캣', allergens: [] }
-        ],
-        calories: '742.1 Kcal',
-        origin: '닭고기(국내산), 쇠고기(한우), 쌀(국내산)',
-        nutrition: '탄수화물: 104g, 단백질: 41g, 지방: 21g'
-      },
-      2: {
-        dishes: [
-          { name: '수제치즈버거', allergens: [1, 2, 5, 6, 10, 12, 13, 16] },
-          { name: '크림스프', allergens: [1, 2, 5, 6] },
-          { name: '웨지감자구이', allergens: [5] },
-          { name: '수제피클', allergens: [] },
-          { name: '한라봉에이드', allergens: [] }
-        ],
-        calories: '810.0 Kcal',
-        origin: '쇠고기(국내산), 돼지고기(국내산)',
-        nutrition: '탄수화물: 110g, 단백질: 32g, 지방: 28g'
-      },
-      3: {
-        dishes: [
-          { name: '잡곡밥', allergens: [5] },
-          { name: '쇠고기무국', allergens: [5, 6, 16] },
-          { name: '오징어볶음', allergens: [5, 6, 17] },
-          { name: '시금치나물무침', allergens: [] },
-          { name: '포기김치', allergens: [9] },
-          { name: '사과', allergens: [] }
-        ],
-        calories: '630.2 Kcal',
-        origin: '오징어(국내산), 쇠고기(국내산)',
-        nutrition: '탄수화물: 88g, 단백질: 36g, 지방: 14g'
-      },
-      4: {
-        dishes: [
-          { name: '카레라이스', allergens: [2, 5, 6, 10, 12, 13] },
-          { name: '팽이버섯장국', allergens: [5, 6] },
-          { name: '수제치킨까스', allergens: [1, 5, 6, 15] },
-          { name: '단무지무침', allergens: [] },
-          { name: '배추겉절이', allergens: [9] },
-          { name: '요구르트', allergens: [2] }
-        ],
-        calories: '715.8 Kcal',
-        origin: '닭고기(국내산), 돼지고기(국내산)',
-        nutrition: '탄수화물: 98g, 단백질: 38g, 지방: 22g'
-      }
-    };
-
-    const MOCK_EVENTS = [
-      { date: '2026-03-23', eventNm: '1학기 학급 임원 선거', type: '행사' },
-      { date: '2026-03-27', eventNm: '동아리 오리엔테이션', type: '행사' },
-      { date: '2026-04-08', eventNm: '전국연합학력평가', type: '시험' },
-      { date: '2026-04-29', eventNm: '1학기 중간고사 (시작)', type: '시험' },
-      { date: '2026-05-05', eventNm: '어린이날 (공휴일)', type: '휴업일' }
-    ];
-
     // State
-    let currentSchool = {
+    let currentSchool = JSON.parse(localStorage.getItem('user_school') || JSON.stringify({
       ATPT_OFCDC_SC_CODE: 'B10',
       SD_SCHUL_CODE: '7010057',
       SCHUL_NM: '서울고등학교'
-    };
+    }));
+    
     let currentBaseDate = new Date();
-    let selectedDayIndex = 0; // 0 = Mon, 4 = Fri
+    let selectedDayIndex = 0;
     let userAllergies = JSON.parse(localStorage.getItem('user_allergies') || '[]');
     let currentTab = 'meal';
-    let isServerlessMode = true; // Attempts api/generate.js first, falls back gracefully
+    
+    let weeklyMealCache = {}; 
+    let scheduleCache = {};
 
     document.addEventListener('DOMContentLoaded', () => {
       initEventListeners();
       renderAllergyGrid();
+      
+      const day = currentBaseDate.getDay();
+      if (day === 0 || day === 6) {
+        selectedDayIndex = 0;
+      } else {
+        selectedDayIndex = day - 1;
+      }
+
+      updateSchoolDisplay();
       updateWeekView();
-      renderScheduleList();
     });
 
     function initEventListeners() {
-      // Dark Mode Toggle
       document.getElementById('btn-theme-toggle').addEventListener('click', () => {
         document.documentElement.classList.toggle('dark');
       });
 
-      // Navigation Week Buttons
       document.getElementById('btn-prev-week').addEventListener('click', () => {
         currentBaseDate.setDate(currentBaseDate.getDate() - 7);
         updateWeekView();
@@ -428,15 +355,18 @@
         updateWeekView();
       });
 
-      // Modal Triggers
       const modal = document.getElementById('modal-school-search');
       document.getElementById('btn-school-search').addEventListener('click', () => {
         modal.classList.remove('hidden');
+        document.getElementById('input-school-name').focus();
       });
       document.getElementById('btn-close-modal').addEventListener('click', () => {
         modal.classList.add('hidden');
       });
-      document.getElementById('btn-do-search').addEventListener('click', performSchoolSearch);
+    }
+
+    function updateSchoolDisplay() {
+      document.getElementById('current-school-display').innerText = currentSchool.SCHUL_NM;
     }
 
     function switchTab(tab) {
@@ -452,6 +382,17 @@
           tabBtn.className = 'flex-1 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700';
         }
       });
+
+      if (tab === 'schedule') {
+        fetchAndRenderSchedule();
+      }
+    }
+
+    function formatDateToYMD(dateObj) {
+      const year = dateObj.getFullYear();
+      const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+      const day = String(dateObj.getDate()).padStart(2, '0');
+      return `${year}${month}${day}`;
     }
 
     function getMonToFri(baseDate) {
@@ -469,16 +410,119 @@
       return days;
     }
 
-    function updateWeekView() {
+    async function apiFetch(params) {
+      const queryString = new URLSearchParams(params).toString();
+      try {
+        // First try calling local serverless api proxy
+        const res = await fetch(`/api/generate?${queryString}`);
+        if (res.ok) {
+          const data = await res.json();
+          updateApiStatus(true, 'api/generate.js 연동됨');
+          return data;
+        }
+        throw new Error('Serverless proxy unavailable');
+      } catch (err) {
+        // Fallback to direct NEIS Open API if serverless endpoint isn't served in static preview
+        console.warn('Falling back to direct NEIS Open API client fetch:', err);
+        return directNeisFallback(params);
+      }
+    }
+
+    async function directNeisFallback(params) {
+      const NEIS_KEY = 'sample';
+      const type = params.type || 'meal';
+
+      if (type === 'search') {
+        const url = `https://open.neis.go.kr/hub/schoolInfo?KEY=${NEIS_KEY}&Type=json&pIndex=1&pSize=30&SCHUL_NM=${encodeURIComponent(params.keyword)}`;
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data.schoolInfo) {
+          return {
+            success: true,
+            schools: data.schoolInfo[1].row.map(s => ({
+              ATPT_OFCDC_SC_CODE: s.ATPT_OFCDC_SC_CODE,
+              SD_SCHUL_CODE: s.SD_SCHUL_CODE,
+              SCHUL_NM: s.SCHUL_NM,
+              ATPT_OFCDC_SC_NM: s.ATPT_OFCDC_SC_NM,
+              LCTN_SC_NM: s.LCTN_SC_NM
+            }))
+          };
+        }
+        return { success: true, schools: [] };
+      }
+
+      if (type === 'meal') {
+        const url = `https://open.neis.go.kr/hub/mealServiceDietInfo?KEY=${NEIS_KEY}&Type=json&pIndex=1&pSize=100&ATPT_OFCDC_SC_CODE=${params.office}&SD_SCHUL_CODE=${params.school}&MLSV_FROM_YMD=${params.from}&MLSV_TO_YMD=${params.to}`;
+        const res = await fetch(url);
+        const data = await res.json();
+        
+        if (data.mealServiceDietInfo) {
+          const meals = data.mealServiceDietInfo[1].row.map(item => {
+            const rawDishes = item.DDISH_NM.split('<br/>').map(d => d.trim()).filter(Boolean);
+            const dishes = rawDishes.map(parseNeisDishClient);
+            return {
+              date: item.MLSV_YMD,
+              mealType: item.MMEAL_SC_NM,
+              dishes,
+              calories: item.CAL_INFO || '정보 없음',
+              origin: item.ORGC_INFO ? item.ORGC_INFO.replace(/<br\/>/g, ', ') : '원산지 정보 없음',
+              nutrition: item.NTR_INFO ? item.NTR_INFO.replace(/<br\/>/g, ', ') : '영양 정보 없음'
+            };
+          });
+          updateApiStatus(true, 'NEIS 실시간 직접 연동됨');
+          return { success: true, meals };
+        }
+        return { success: true, meals: [] };
+      }
+
+      if (type === 'schedule') {
+        const url = `https://open.neis.go.kr/hub/SchoolSchedule?KEY=${NEIS_KEY}&Type=json&pIndex=1&pSize=100&ATPT_OFCDC_SC_CODE=${params.office}&SD_SCHUL_CODE=${params.school}&AA_FROM_YMD=${params.from}&AA_TO_YMD=${params.to}`;
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data.SchoolSchedule) {
+          const events = data.SchoolSchedule[1].row
+            .filter(e => e.EVENT_NM && e.EVENT_NM !== '토요휴업일')
+            .map(e => ({
+              date: `${e.AA_YMD.substring(0, 4)}.${e.AA_YMD.substring(4, 6)}.${e.AA_YMD.substring(6, 8)}`,
+              eventNm: e.EVENT_NM,
+              type: e.EVENT_NM.includes('시험') || e.EVENT_NM.includes('고사') ? '시험' : '행사'
+            }));
+          return { success: true, events };
+        }
+        return { success: true, events: [] };
+      }
+    }
+
+    function parseNeisDishClient(dishStr) {
+      if (!dishStr) return { name: '', allergens: [] };
+      const matches = dishStr.match(/\(([0-9\.]+)\)|\b([0-9\.]+)\b/g) || [];
+      const numbers = new Set();
+      matches.forEach(m => {
+        const clean = m.replace(/[()]/g, '');
+        clean.split('.').forEach(numStr => {
+          const parsed = parseInt(numStr.trim(), 10);
+          if (!isNaN(parsed) && parsed >= 1 && parsed <= 19) numbers.add(parsed);
+        });
+      });
+      return {
+        name: dishStr.replace(/[0-9\.\(\)]+/g, '').trim(),
+        allergens: Array.from(numbers).sort((a, b) => a - b)
+      };
+    }
+
+    async function updateWeekView() {
       const weekDays = getMonToFri(currentBaseDate);
+      const fromYmd = formatDateToYMD(weekDays[0]);
+      const toYmd = formatDateToYMD(weekDays[4]);
+
       const monStr = `${weekDays[0].getMonth() + 1}.${weekDays[0].getDate()}`;
       const friStr = `${weekDays[4].getMonth() + 1}.${weekDays[4].getDate()}`;
       document.getElementById('week-range-text').innerText = `${weekDays[0].getFullYear()}.${monStr} ~ ${friStr}`;
 
       const dayPillsContainer = document.getElementById('day-pills-container');
       dayPillsContainer.innerHTML = '';
-
       const dayLabels = ['월', '화', '수', '목', '금'];
+
       weekDays.forEach((dayObj, index) => {
         const isSelected = index === selectedDayIndex;
         const btn = document.createElement('button');
@@ -499,21 +543,77 @@
         dayPillsContainer.appendChild(btn);
       });
 
+      await fetchWeeklyMeals(fromYmd, toYmd);
       renderMealDetail(weekDays[selectedDayIndex], dayLabels[selectedDayIndex]);
     }
 
+    async function fetchWeeklyMeals(fromYmd, toYmd) {
+      const cacheKey = `${currentSchool.SD_SCHUL_CODE}_${fromYmd}_${toYmd}`;
+      if (weeklyMealCache[cacheKey]) return;
+
+      document.getElementById('meal-dish-list').innerHTML = `
+        <li class="text-center text-slate-400 text-xs py-8">
+          <i class="fa-solid fa-spinner fa-spin text-lg mb-2 text-blue-500"></i><br>
+          급식 데이터를 불러오는 중...
+        </li>
+      `;
+
+      const res = await apiFetch({
+        type: 'meal',
+        office: currentSchool.ATPT_OFCDC_SC_CODE,
+        school: currentSchool.SD_SCHUL_CODE,
+        from: fromYmd,
+        to: toYmd
+      });
+
+      const mealsByDate = {};
+      if (res && res.meals) {
+        res.meals.forEach(item => {
+          if (!mealsByDate[item.date] || item.mealType === '중식') {
+            mealsByDate[item.date] = item;
+          }
+        });
+      }
+
+      weeklyMealCache[cacheKey] = mealsByDate;
+    }
+
     function renderMealDetail(dateObj, dayLabel) {
+      const ymd = formatDateToYMD(dateObj);
+      const weekDays = getMonToFri(currentBaseDate);
+      const fromYmd = formatDateToYMD(weekDays[0]);
+      const toYmd = formatDateToYMD(weekDays[4]);
+      const cacheKey = `${currentSchool.SD_SCHUL_CODE}_${fromYmd}_${toYmd}`;
+
+      const weeklyData = weeklyMealCache[cacheKey] || {};
+      const dayData = weeklyData[ymd];
+
       document.getElementById('selected-day-title').innerHTML = `
         <span>${dayLabel}요일 급식</span>
         <span class="text-xs font-normal text-slate-500 dark:text-slate-400">${dateObj.getMonth() + 1}월 ${dateObj.getDate()}일</span>
       `;
 
-      // Fetch Mock Data (or serverless API fallback)
-      const data = MOCK_MEALS[selectedDayIndex] || MOCK_MEALS[0];
+      if (!dayData) {
+        document.getElementById('meal-calories').innerHTML = `
+          <i class="fa-solid fa-fire-flame-curved text-slate-400"></i>
+          <span>- Kcal</span>
+        `;
+        document.getElementById('meal-dish-list').innerHTML = `
+          <li class="text-center text-slate-400 text-xs py-10 bg-slate-50/50 dark:bg-slate-800/30 rounded-xl border border-dashed border-slate-200 dark:border-slate-800">
+            <i class="fa-solid fa-utensils text-2xl mb-2 text-slate-300 dark:text-slate-600"></i><br>
+            해당 날짜에는 급식 정보가 존재하지 않습니다.<br>
+            <span class="text-[10px] opacity-70">(주말, 공휴일 또는 방학기간일 수 있습니다)</span>
+          </li>
+        `;
+        document.getElementById('allergy-alert-banner').classList.add('hidden');
+        document.getElementById('meal-origin-text').innerText = '등록된 정보가 없습니다.';
+        document.getElementById('meal-nutrition-text').innerText = '등록된 정보가 없습니다.';
+        return;
+      }
 
       document.getElementById('meal-calories').innerHTML = `
         <i class="fa-solid fa-fire-flame-curved text-rose-500"></i>
-        <span>${data.calories}</span>
+        <span>${dayData.calories}</span>
       `;
 
       const dishListEl = document.getElementById('meal-dish-list');
@@ -521,14 +621,14 @@
 
       let hasWarning = false;
 
-      data.dishes.forEach(dish => {
+      dayData.dishes.forEach(dish => {
         const matchingAllergies = dish.allergens.filter(a => userAllergies.includes(a));
         if (matchingAllergies.length > 0) hasWarning = true;
 
         const li = document.createElement('li');
         li.className = `p-2.5 rounded-xl border transition-all flex items-center justify-between ${
           matchingAllergies.length > 0
-            ? 'bg-amber-50/80 dark:bg-amber-950/40 border-amber-300 dark:border-amber-800'
+            ? 'bg-amber-50/80 dark:bg-amber-950/40 border-amber-300 dark:border-amber-800 shadow-sm'
             : 'bg-slate-50/80 dark:bg-slate-800/40 border-slate-100 dark:border-slate-800'
         }`;
 
@@ -536,7 +636,7 @@
           const isUserMatch = userAllergies.includes(aId);
           return `<span class="px-1.5 py-0.5 text-[9px] rounded font-semibold ${
             isUserMatch 
-              ? 'bg-amber-500 text-white font-bold' 
+              ? 'bg-amber-500 text-white font-bold animate-pulse' 
               : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
           }">${aId}</span>`;
         }).join(' ');
@@ -551,7 +651,6 @@
         dishListEl.appendChild(li);
       });
 
-      // Show/Hide Warning Banner
       const alertBanner = document.getElementById('allergy-alert-banner');
       if (hasWarning) {
         alertBanner.classList.remove('hidden');
@@ -559,8 +658,75 @@
         alertBanner.classList.add('hidden');
       }
 
-      document.getElementById('meal-origin-text').innerText = data.origin;
-      document.getElementById('meal-nutrition-text').innerText = data.nutrition;
+      document.getElementById('meal-origin-text').innerText = dayData.origin || '원산지 정보 없음';
+      document.getElementById('meal-nutrition-text').innerText = dayData.nutrition || '영양 성분 정보 없음';
+    }
+
+    async function fetchAndRenderSchedule() {
+      const year = currentBaseDate.getFullYear();
+      const month = String(currentBaseDate.getMonth() + 1).padStart(2, '0');
+      const fromYmd = `${year}${month}01`;
+      const lastDay = new Date(year, currentBaseDate.getMonth() + 1, 0).getDate();
+      const toYmd = `${year}${month}${lastDay}`;
+
+      document.getElementById('schedule-month-badge').innerText = `${year}년 ${currentBaseDate.getMonth() + 1}월`;
+
+      const cacheKey = `${currentSchool.SD_SCHUL_CODE}_SCH_${fromYmd}_${toYmd}`;
+      const container = document.getElementById('schedule-list');
+
+      if (scheduleCache[cacheKey]) {
+        renderScheduleData(scheduleCache[cacheKey]);
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="text-center text-slate-400 text-xs py-8">
+          <i class="fa-solid fa-spinner fa-spin text-base mb-2 text-blue-500"></i><br>
+          학사일정을 가져오는 중...
+        </div>
+      `;
+
+      const res = await apiFetch({
+        type: 'schedule',
+        office: currentSchool.ATPT_OFCDC_SC_CODE,
+        school: currentSchool.SD_SCHUL_CODE,
+        from: fromYmd,
+        to: toYmd
+      });
+
+      const events = (res && res.events) ? res.events : [];
+      scheduleCache[cacheKey] = events;
+      renderScheduleData(events);
+    }
+
+    function renderScheduleData(events) {
+      const container = document.getElementById('schedule-list');
+      container.innerHTML = '';
+
+      if (!events || events.length === 0) {
+        container.innerHTML = `<div class="text-center text-slate-400 text-xs py-8">이번 달 등록된 학사일정이 없습니다.</div>`;
+        return;
+      }
+
+      events.forEach(ev => {
+        const div = document.createElement('div');
+        div.className = 'p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center justify-between';
+        
+        const badgeColor = (ev.type === '시험' || ev.eventNm?.includes('고사'))
+          ? 'bg-rose-100 dark:bg-rose-950 text-rose-600 dark:text-rose-400' 
+          : 'bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400';
+
+        div.innerHTML = `
+          <div>
+            <div class="text-xs font-bold text-slate-800 dark:text-slate-100">${ev.eventNm}</div>
+            <div class="text-[11px] text-slate-400 mt-0.5">${ev.date}</div>
+          </div>
+          <span class="text-[10px] font-bold px-2 py-0.5 rounded-md ${badgeColor}">
+            ${ev.type || '행사'}
+          </span>
+        `;
+        container.appendChild(div);
+      });
     }
 
     function renderAllergyGrid() {
@@ -597,31 +763,6 @@
       document.getElementById('allergy-count-badge').innerText = `${userAllergies.length}개 선택됨`;
     }
 
-    function renderScheduleList() {
-      const container = document.getElementById('schedule-list');
-      container.innerHTML = '';
-
-      MOCK_EVENTS.forEach(ev => {
-        const div = document.createElement('div');
-        div.className = 'p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center justify-between';
-        
-        const badgeColor = ev.type === '시험' 
-          ? 'bg-rose-100 dark:bg-rose-950 text-rose-600 dark:text-rose-400' 
-          : 'bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400';
-
-        div.innerHTML = `
-          <div>
-            <div class="text-xs font-bold text-slate-800 dark:text-slate-100">${ev.eventNm}</div>
-            <div class="text-[11px] text-slate-400 mt-0.5">${ev.date}</div>
-          </div>
-          <span class="text-[10px] font-bold px-2 py-0.5 rounded-md ${badgeColor}">
-            ${ev.type}
-          </span>
-        `;
-        container.appendChild(div);
-      });
-    }
-
     async function performSchoolSearch() {
       const input = document.getElementById('input-school-name').value.trim();
       const resultsContainer = document.getElementById('search-results-list');
@@ -631,50 +772,47 @@
         return;
       }
 
-      resultsContainer.innerHTML = '<div class="text-center text-slate-400 text-xs py-8"><i class="fa-solid fa-spinner fa-spin"></i> 검색 중...</div>';
+      resultsContainer.innerHTML = '<div class="text-center text-slate-400 text-xs py-8"><i class="fa-solid fa-spinner fa-spin text-base mb-2"></i><br>학교 정보를 검색하는 중...</div>';
 
-      try {
-        // Fetch from api/generate.js route
-        const res = await fetch(`/api/generate?type=search&keyword=${encodeURIComponent(input)}`);
-        const data = await res.json();
+      const res = await apiFetch({ type: 'search', keyword: input });
 
-        if (data.schools && data.schools.length > 0) {
-          resultsContainer.innerHTML = '';
-          data.schools.forEach(s => {
-            const item = document.createElement('div');
-            item.className = 'p-3 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-950/40 border border-slate-200 dark:border-slate-700 cursor-pointer transition-colors';
-            item.onclick = () => selectSchool(s);
-            item.innerHTML = `
-              <div class="font-bold text-xs text-slate-800 dark:text-slate-200">${s.SCHUL_NM}</div>
-              <div class="text-[10px] text-slate-400 mt-0.5">${s.ATPT_OFCDC_SC_NM} | ${s.LCTN_SC_NM || '지역 미지정'}</div>
-            `;
-            resultsContainer.appendChild(item);
-          });
-        } else {
-          resultsContainer.innerHTML = '<div class="text-center text-slate-400 text-xs py-8">검색 결과가 없습니다.</div>';
-        }
-      } catch (err) {
-        // Mock fallback demo search
-        resultsContainer.innerHTML = `
-          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 cursor-pointer" onclick="selectSchool({SCHUL_NM: '${input}', SD_SCHUL_CODE: '7010057'})">
-            <div class="font-bold text-xs text-slate-800 dark:text-slate-200">${input}</div>
-            <div class="text-[10px] text-slate-400 mt-0.5">서울특별시교육청 (데모 바로선택)</div>
-          </div>
-        `;
+      if (res && res.schools && res.schools.length > 0) {
+        resultsContainer.innerHTML = '';
+        res.schools.forEach(s => {
+          const item = document.createElement('div');
+          item.className = 'p-3 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-950/40 border border-slate-200 dark:border-slate-700 cursor-pointer transition-colors';
+          item.onclick = () => selectSchool(s);
+
+          item.innerHTML = `
+            <div class="font-bold text-xs text-slate-800 dark:text-slate-200">${s.SCHUL_NM}</div>
+            <div class="text-[10px] text-slate-400 mt-0.5">${s.ATPT_OFCDC_SC_NM || '교육청'} | ${s.LCTN_SC_NM || '소재지'}</div>
+          `;
+          resultsContainer.appendChild(item);
+        });
+      } else {
+        resultsContainer.innerHTML = '<div class="text-center text-slate-400 text-xs py-8">검색된 학교가 없습니다.</div>';
       }
     }
 
     function selectSchool(school) {
       currentSchool = school;
-      document.getElementById('current-school-display').innerText = school.SCHUL_NM;
+      localStorage.setItem('user_school', JSON.stringify(school));
+      updateSchoolDisplay();
       document.getElementById('modal-school-search').classList.add('hidden');
+      
+      weeklyMealCache = {};
+      scheduleCache = {};
       updateWeekView();
+      if (currentTab === 'schedule') {
+        fetchAndRenderSchedule();
+      }
     }
 
-    function toggleApiMode() {
-      isServerlessMode = !isServerlessMode;
-      const statusText = document.getElementById('api-status-text');
-      statusText.innerText = isServerlessMode ? 'NEIS API 연동중' : '로컬 목데이터 모드';
+    function updateApiStatus(isOk, text) {
+      const dot = document.getElementById('api-status-dot');
+      const label = document.getElementById('api-status-text');
+      label.innerText = text;
+      dot.className = isOk ? 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse' : 'w-2 h-2 rounded-full bg-rose-400';
     }
   </script>
 </body>
